@@ -1,23 +1,24 @@
-import  { useState } from 'react';
-import Button from '@mui/material/Button';
-import Dialog from '@mui/material/Dialog';
-import DialogTitle from '@mui/material/DialogTitle';
-import DialogContent from '@mui/material/DialogContent';
-import DialogActions from '@mui/material/DialogActions';
-import TextField from '@mui/material/TextField';
+import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, Fab, TextField } from "@mui/material"
+import AddIcon from '@mui/icons-material/Add';
 
-function DialogCom() {
-  const [open, setOpen] = useState(true);
+import { useState } from "react";
+
+
+function TaskDialogCom() {
+  const [open, setOpen] = useState(false);
+
+
   const [taskDetails, setTaskDetails] = useState({
     title: '',
     description: '',
     category: '',
   });
+  
 
 
 
   const handleClose = () => {
-    setOpen(false);
+    setOpen(!open);
   };
 
   const handleChange = (event) => {
@@ -29,9 +30,7 @@ function DialogCom() {
   };
 
   const handleSave = () => {
-    // Perform actions with task details (e.g., save to database, update UI, etc.)
 
-    // Reset task details
     setTaskDetails({
       title: '',
       description: '',
@@ -41,13 +40,14 @@ function DialogCom() {
     // Close the dialog
     handleClose();
   };
-
   return (
-    <div>
-      {/* Button to open the task dialog */}
+    <>
     
-
-      {/* Task creation dialog */}
+    <Box position="fixed" bottom={16} right={16} color="secondary">
+        <Fab color="success" onClick={()=> setOpen(true)}>
+          <AddIcon />
+        </Fab>
+      </Box>
       <Dialog open={open} onClose={handleClose}>
         <DialogTitle>Add Task</DialogTitle>
         <DialogContent>
@@ -90,8 +90,8 @@ function DialogCom() {
           </Button>
         </DialogActions>
       </Dialog>
-    </div>
-  );
+    </>
+  )
 }
 
-export default DialogCom;
+export default TaskDialogCom
