@@ -19,25 +19,39 @@ const typeorm_2 = require("@nestjs/typeorm");
 const auth_entity_1 = require("./entity/auth.entity");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
+const scrap_service_1 = require("./scraping/scrap.service");
 let AuthService = class AuthService {
-    constructor(userRepository) {
+    constructor(userRepository, scrapingService) {
         this.userRepository = userRepository;
+        this.scrapingService = scrapingService;
         this.jwtSecret = 'yourSecretKey';
     }
     async register(email, password, linkedinProfile) {
-        const existingUser = await this.userRepository.findOne({ where: { email } });
+        const existingUser = await this.userRepository.findOne({
+            where: { email },
+        });
         if (existingUser) {
             throw new common_1.NotFoundException('User with this email already exists');
         }
         const hashedPassword = await bcrypt.hash(password, 10);
+        let linkedinProfileImageUrl = null;
+        if (linkedinProfile) {
+            try {
+                linkedinProfileImageUrl =
+                    await this.scrapingService.scrapeUserProfileImage(linkedinProfile);
+            }
+            catch (error) {
+                console.error('Error scraping LinkedIn profile image:', error.message);
+            }
+        }
         const newUser = this.userRepository.create({
             email,
             password: hashedPassword,
-            linkedinProfile,
+            linkedinProfile: linkedinProfileImageUrl,
         });
         const user = await this.userRepository.save(newUser);
         const token = this.generateJwtToken(user);
-        return { token };
+        return { token, ...user };
     }
     async login(email, password) {
         const user = await this.userRepository.findOne({ where: { email } });
@@ -56,6 +70,7 @@ exports.AuthService = AuthService;
 exports.AuthService = AuthService = __decorate([
     (0, common_1.Injectable)(),
     __param(0, (0, typeorm_2.InjectRepository)(auth_entity_1.User)),
-    __metadata("design:paramtypes", [typeorm_1.Repository])
+    __metadata("design:paramtypes", [typeorm_1.Repository,
+        scrap_service_1.ScrapingService])
 ], AuthService);
 //# sourceMappingURL=auth.service.js.map

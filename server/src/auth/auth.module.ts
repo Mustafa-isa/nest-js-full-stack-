@@ -1,18 +1,15 @@
 // src/auth/auth.module.ts
 
 import { Module } from '@nestjs/common';
-import { PassportModule } from '@nestjs/passport';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
-import { User } from './entity/auth.entity'; // Adjust this based on your project structure
+import { ScrapingService } from './scraping/scrap.service'; // Import ScrapingService
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { User } from './entity/auth.entity';
+import { AuthController } from './auth.controller';
 
 @Module({
-  imports: [
-    PassportModule,
-    TypeOrmModule.forFeature([User]), // Assuming you have a User entity
-  ],
+  imports: [TypeOrmModule.forFeature([User])], // Include ScrapingService in imports
+  providers: [AuthService, ScrapingService],
   controllers: [AuthController],
-  providers: [AuthService],
 })
 export class AuthModule {}

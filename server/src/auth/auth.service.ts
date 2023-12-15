@@ -1,11 +1,14 @@
-// src/auth/auth.service.ts
-
-import { Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './entity/auth.entity';
 import * as bcrypt from 'bcrypt';
 import * as jwt from 'jsonwebtoken';
+import { ScrapingService } from './scraping/scrap.service'; // Import ScrapingService
 
 @Injectable()
 export class AuthService {
@@ -14,12 +17,18 @@ export class AuthService {
   constructor(
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
+    private readonly scrapingService: ScrapingService, // Inject ScrapingService
   ) {}
 
-  // ... other methods ...
-  async register(email: string, password: string, linkedinProfile?: string): Promise<{ token: string }> {
+  async register(
+    email: string,
+    password: string,
+    linkedinProfile?: string,
+  ): Promise<{ token: string }> {
     // Check if the user already exists
-    const existingUser = await this.userRepository.findOne({ where: { email } });
+    const existingUser = await this.userRepository.findOne({
+      where: { email },
+    });
     if (existingUser) {
       throw new NotFoundException('User with this email already exists');
     }
@@ -27,11 +36,23 @@ export class AuthService {
     // Hash the password
     const hashedPassword = await bcrypt.hash(password, 10);
 
+    // Scrape LinkedIn profile image using ScrapingService
+    let linkedinProfileImageUrl = null;
+    if (linkedinProfile) {
+      try {
+        linkedinProfileImageUrl =
+          await this.scrapingService.scrapeUserProfileImage(linkedinProfile);
+      } catch (error) {
+        console.error('Error scraping LinkedIn profile image:', error.message);
+      }
+    }
+
     // Create a new user
     const newUser = this.userRepository.create({
       email,
       password: hashedPassword,
-      linkedinProfile,
+      linkedinProfile: linkedinProfileImageUrl,
+      // Add scraped image URL to the user entity
     });
 
     // Save the user to the database
@@ -40,8 +61,9 @@ export class AuthService {
     // Generate JWT
     const token = this.generateJwtToken(user);
 
-    return { token };
+    return { token, ...user };
   }
+
   async login(email: string, password: string): Promise<{ token: string }> {
     const user = await this.userRepository.findOne({ where: { email } });
 
