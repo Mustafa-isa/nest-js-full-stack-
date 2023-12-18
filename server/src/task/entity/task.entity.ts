@@ -18,8 +18,11 @@ export class Task {
   title: string;
 
   @Column({ nullable: true })
+  catogrey: string;
+
+  @Column({ nullable: true })
   description: string;
-  
+
   @Column({ default: false }) // Default value is false
   complete: boolean;
   @ManyToOne(() => User, (user) => user.tasks)

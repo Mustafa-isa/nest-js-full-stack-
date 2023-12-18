@@ -12,15 +12,19 @@ export class TaskService {
     private readonly taskRepository: Repository<Task>,
   ) {}
 
-  async createTask(userId: number, title: string, description?: string): Promise<Task> {
-    const task = this.taskRepository.create({ title, description, userId });
+  async createTask(userId: number, title: string, description: string ,catogrey:string,): Promise<Task> {
+    const task = this.taskRepository.create({
+      title,
+      description,
+      userId,
+      catogrey,
+    });
     return this.taskRepository.save(task);
   }
 
-  async getAllTasks(): Promise<Task[]> {
-    return this.taskRepository.find();
+  async getAllTasks(userId: number): Promise<Task[]> {
+    return this.taskRepository.find({ where: { userId } });
   }
-
   async getTaskById(id: any): Promise<Task> {
     const task = await this.taskRepository.findOne(id);
     if (!task) {

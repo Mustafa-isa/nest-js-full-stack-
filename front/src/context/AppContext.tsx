@@ -4,12 +4,14 @@ import axios, { AxiosInstance } from "axios";
 import { toast } from "react-toastify";
 
 import "react-toastify/dist/ReactToastify.css";
+
 interface User {
   id: string;
   username: string;
 }
 
 interface Task {
+  title: ReactNode;
   id: string;
   // Add other task properties as needed
 }
@@ -31,7 +33,7 @@ interface AppContextProps {
 }
 
 const AppContext = createContext<AppContextProps | undefined>(undefined);
-
+let data ;
 export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
@@ -46,8 +48,12 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
         password,
       });
       setUser(response.data.userRegistreration);
+      console.log(response.data);
 
-      localStorage.setItem("userData", JSON.stringify(user));
+      localStorage.setItem(
+        "userData",
+        JSON.stringify(response.data.userRegistreration)
+      );
     } catch (error) {
       throw new Error("User Not Found");
 
@@ -66,13 +72,17 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
         password,
         linkedinProfile,
       });
-    
-      console.log(response)
+
+      console.log(response);
 
       setUser(response.data.userRegistreration);
-      const { user } = response.data;
-      localStorage.setItem("userData", JSON.stringify(user));
+      console.log(response.data);
+      localStorage.setItem(
+        "userData",
+        JSON.stringify(response.data.userRegistreration)
+      );
     } catch (error) {
+      throw new Error("user cant register");
       console.error("Error during registration:", error);
       // Handle registration error
     }
@@ -83,12 +93,11 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
     localStorage.removeItem("token");
   };
 
-  const addTask = async (task: Task) => {
+  const addTask = async (task) => {
     try {
-      const response = await axiosInstance.post("/tasks", task, {
-        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-      });
-      const newTask: Task = response.data;
+      const response = await axios.post("http://localhost:3000/tasks", task);
+
+      const newTask = response.data;
 
       setTasks([...tasks, newTask]);
     } catch (error) {
@@ -132,19 +141,56 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
 
   const getTasks = async () => {
     try {
+      const userIdFrom =
+        JSON.parse(localStorage.getItem("userData")).id || null;
+      if (userIdFrom == null) {
+        throw new Error("user not found");
+      }
       const response = await axios.get(
-        "http://localhost:3000/tasks"
-
-        // {
-        //   headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-        // }
+        `http://localhost:3000/tasks?userId=${userIdFrom}`
       );
 
       const tasksData = response.data;
+      data =tasksData
       setTasks(tasksData);
     } catch (error) {
       console.error("Error during get tasks:", error);
       // Handle get tasks error
+    }
+  };
+  const filterTasks = (condition) => {
+    switch (condition) {
+      case "Sport":
+        setTasks((prevTasks) =>
+          prevTasks.filter((el) => el.description === "Sport")
+        );
+        break;
+
+        case "Eductional":
+          setTasks((prevTasks) =>
+            prevTasks.filter((el) => el.description === "Eductional")
+          );
+          break;
+
+          case "Eductional":
+            setTasks((prevTasks) =>
+              prevTasks.filter((el) => el.description === "Eductional")
+            );
+            break;
+
+            case "Eductional":
+              setTasks((prevTasks) =>
+                prevTasks.filter((el) => el.description === "Eductional")
+              );
+              break;
+      // Add more cases for different conditions as needed
+  
+      default:
+        // Handle the default case by setting tasks to the original array
+        setTasks(data);
+        console.log("not sport you clicked")
+        console.log(condition)
+        break;
     }
   };
 
@@ -160,6 +206,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
         deleteTask,
         updateTask,
         getTasks,
+        filterTasks,
       }}
     >
       {children}

@@ -19,7 +19,7 @@ export class ScrapingService {
       // Wait for a more general selector related to the profile image
       await page.waitForSelector('.navbar-brand img');
 
-      // Get the profile image URL
+      // Get the profile image URL    
       const profileImageUrl = await page.evaluate(() => {
         return new Promise((resolve) => {
           const waitForImage = () => {

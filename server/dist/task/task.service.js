@@ -21,12 +21,17 @@ let TaskService = class TaskService {
     constructor(taskRepository) {
         this.taskRepository = taskRepository;
     }
-    async createTask(userId, title, description) {
-        const task = this.taskRepository.create({ title, description, userId });
+    async createTask(userId, title, description, catogrey) {
+        const task = this.taskRepository.create({
+            title,
+            description,
+            userId,
+            catogrey,
+        });
         return this.taskRepository.save(task);
     }
-    async getAllTasks() {
-        return this.taskRepository.find();
+    async getAllTasks(userId) {
+        return this.taskRepository.find({ where: { userId } });
     }
     async getTaskById(id) {
         const task = await this.taskRepository.findOne(id);

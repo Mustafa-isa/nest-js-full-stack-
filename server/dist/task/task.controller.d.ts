@@ -4,10 +4,11 @@ export declare class TaskController {
     constructor(taskService: TaskService);
     createTask(req: any, body: {
         title: string;
-        description?: string;
+        description: string;
         id: number;
+        catogrey: 'string';
     }): Promise<any>;
-    getAllTasks(): Promise<any>;
+    getAllTasks(userId: string): Promise<any>;
     getTaskById(id: string): Promise<any>;
     updateTask(id: string, body: {
         title: string;

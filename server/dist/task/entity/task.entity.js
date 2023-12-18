@@ -26,6 +26,10 @@ __decorate([
 __decorate([
     (0, typeorm_1.Column)({ nullable: true }),
     __metadata("design:type", String)
+], Task.prototype, "catogrey", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ nullable: true }),
+    __metadata("design:type", String)
 ], Task.prototype, "description", void 0);
 __decorate([
     (0, typeorm_1.Column)({ default: false }),

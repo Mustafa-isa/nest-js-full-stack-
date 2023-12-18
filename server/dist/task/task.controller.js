@@ -20,10 +20,10 @@ let TaskController = class TaskController {
         this.taskService = taskService;
     }
     async createTask(req, body) {
-        return this.taskService.createTask(body.id, body.title, body.description);
+        return this.taskService.createTask(body.id, body.title, body.description, body.catogrey);
     }
-    async getAllTasks() {
-        return this.taskService.getAllTasks();
+    async getAllTasks(userId) {
+        return this.taskService.getAllTasks(+userId);
     }
     async getTaskById(id) {
         return this.taskService.getTaskById(+id);
@@ -47,8 +47,9 @@ __decorate([
 ], TaskController.prototype, "createTask", null);
 __decorate([
     (0, common_1.Get)(),
+    __param(0, (0, common_1.Query)('userId')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
+    __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", Promise)
 ], TaskController.prototype, "getAllTasks", null);
 __decorate([
