@@ -18,8 +18,8 @@ function FormControlCom(props: FprmProps) {
         label={props.label}
         variant="outlined"
         margin="normal"
-        type="email"
-        name="email"
+        type={props.type}
+        name={props.name}
         value={props.email}
         onChange={props.onChange}
         error={props.error}

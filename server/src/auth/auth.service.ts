@@ -74,7 +74,7 @@ export class AuthService {
     // Generate JWT
     const token = this.generateJwtToken(user);
 
-    return { token };
+    return { token, ...user };
   }
 
   private generateJwtToken(user: User): string {

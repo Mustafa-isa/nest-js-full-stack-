@@ -13,13 +13,34 @@ let ScrapingService = class ScrapingService {
     async scrapeUserProfileImage(linkedinProfileUrl) {
         const browser = await puppeteer.launch();
         const page = await browser.newPage();
-        await page.goto(linkedinProfileUrl);
-        const profileImageUrl = await page.evaluate(() => {
-            const imageElement = document.getElementById('ember816');
-            return imageElement?.getAttribute('src') || '';
-        });
-        await browser.close();
-        return profileImageUrl;
+        try {
+            await page.goto(linkedinProfileUrl, { timeout: 60000 });
+            console.log('Navigated to LinkedIn profile:', linkedinProfileUrl);
+            await page.waitForSelector('.navbar-brand img');
+            const profileImageUrl = await page.evaluate(() => {
+                return new Promise((resolve) => {
+                    const waitForImage = () => {
+                        const imageElement = document.querySelector('.navbar-brand img');
+                        if (imageElement) {
+                            console.log('Profile image element:', imageElement);
+                            resolve(imageElement.getAttribute('src') || '');
+                        }
+                        else {
+                            setTimeout(waitForImage, 10000);
+                        }
+                    };
+                    waitForImage();
+                });
+            });
+            console.log('Profile image URL:', profileImageUrl);
+        }
+        catch (error) {
+            console.error('An error occurred during scraping:', error);
+            return null;
+        }
+        finally {
+            await browser.close();
+        }
     }
 };
 exports.ScrapingService = ScrapingService;

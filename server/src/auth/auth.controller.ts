@@ -19,7 +19,10 @@ export class AuthController {
       password,
       linkedinProfile,
     );
-    return { message: 'User registered successfully', user };
+    return {
+      message: 'User registered successfully',
+      userRegistreration: user,
+    };
   }
 
   @Post('login')
@@ -28,6 +31,9 @@ export class AuthController {
     @Body('password') password: string,
   ) {
     const result = await this.authService.login(email, password);
-    return result;
+    return {
+      message: 'User registered successfully',
+      userRegistreration: result,
+    };
   }
 }

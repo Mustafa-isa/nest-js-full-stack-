@@ -21,11 +21,17 @@ let AuthController = class AuthController {
     }
     async register(email, password, linkedinProfile) {
         const user = await this.authService.register(email, password, linkedinProfile);
-        return { message: 'User registered successfully', user };
+        return {
+            message: 'User registered successfully',
+            userRegistreration: user,
+        };
     }
     async login(email, password) {
         const result = await this.authService.login(email, password);
-        return result;
+        return {
+            message: 'User registered successfully',
+            userRegistreration: result,
+        };
     }
 };
 exports.AuthController = AuthController;

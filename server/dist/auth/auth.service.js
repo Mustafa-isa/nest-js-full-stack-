@@ -59,7 +59,7 @@ let AuthService = class AuthService {
             throw new common_1.UnauthorizedException('Invalid credentials');
         }
         const token = this.generateJwtToken(user);
-        return { token };
+        return { token, ...user };
     }
     generateJwtToken(user) {
         const payload = { sub: user.id, email: user.email };

@@ -1,16 +1,32 @@
-import { Routes, Route } from "react-router-dom";
-import Dashboard from "./page/Dashboard/Dashboard";
-import Register from "./page/auth/Register";
-import Login from "./page/auth/Login";
+// App.js
+import React from 'react';
+import {  Navigate, Route, Routes } from 'react-router-dom';
+import { AppProvider } from './context/AppContext';
+import Home from './page/Home/Home';
+import Login from './page/auth/Login';
+import Register from './page/auth/Register';
+import { useAppContext } from "./context/AppContext";
 
-function App() {
+const App: React.FC = () => {
+  const { user } = useAppContext();
+
+
   return (
-    <Routes>
-      <Route path = "/register" element={<Register />} />
-      <Route path="/login" element={<Login />} />
-      <Route  index  element={<Dashboard />} />
-    </Routes>
+
+    
+        <Routes>
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+           <Route path="/"  element={<Home />} /> 
+        </Routes>
+
+  
   );
-}
+};
 
 export default App;
+
+
+
+
+

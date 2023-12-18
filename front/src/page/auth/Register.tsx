@@ -8,14 +8,20 @@ import {
   
   Typography,
 } from "@mui/material";
+import { ThreeDots  } from 'react-loading-icons'
 import Stack from '@mui/material/Stack';
 
 import CenteredCard from "../../component/CenterCard";
 import { useState } from "react";
 import FormControlCom from "../../component/FormControlCom";
 import { Link } from "react-router-dom";
+import {useAppContext} from '../../context/AppContext'
+import { useNavigate } from 'react-router';
+
 
 const Register = () => {
+  const [loadBtn ,setLoadBtnm ] = useState(false)
+  const {register}  = useAppContext()
   const [formData, setFormData] = useState({
     email: "",
     linkedProfile: "",
@@ -27,7 +33,7 @@ const Register = () => {
     linkedProfile: "",
     pass: "",
   });
-
+  const navigate = useNavigate();
   const validateForm = () => {
     let valid = true;
     const newErrors = { ...formErrors };
@@ -66,15 +72,25 @@ const Register = () => {
     setFormData((prevData) => ({ ...prevData, [name]: value }));
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
+  const handleSubmit =async (e) => {
+try{
+  e.preventDefault();
+  setLoadBtnm(true)
 
-    if (validateForm()) {
-      // Form submission logic goes here
-      console.log("Form submitted:", formData);
-    } else {
-      console.log("Form has errors. Please fix them.");
-    }
+  if (validateForm()) {
+    // Form submission logic goes here
+    console.log("Form submitted:", formData); 
+  await  register(formData.email ,formData.pass ,formData.linkedProfile)
+  } else {
+    console.log("Form has errors. Please fix them.");
+  }
+}catch(err){
+  console.log(errr)
+}finally{
+  setLoadBtnm(false)
+  navigate('/');
+  console.log("naigate failed")
+}
   };
   return (
     <div
@@ -137,6 +153,7 @@ const Register = () => {
               variant="contained"
               color="secondary"
               fullWidth
+             endIcon={loadBtn && <ThreeDots strokeOpacity={.125} />}
             >
               Register
             </Button>

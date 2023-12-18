@@ -4,11 +4,14 @@ export declare class AuthController {
     constructor(authService: AuthService);
     register(email: string, password: string, linkedinProfile?: string): Promise<{
         message: string;
-        user: {
+        userRegistreration: {
             token: string;
         };
     }>;
     login(email: string, password: string): Promise<{
-        token: string;
+        message: string;
+        userRegistreration: {
+            token: string;
+        };
     }>;
 }

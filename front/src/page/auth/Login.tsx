@@ -7,13 +7,24 @@ import {
   Typography,
 } from "@mui/material";
 import Stack from "@mui/material/Stack";
+import { ToastContainer, toast,  } from 'react-toastify';
 
+  import 'react-toastify/dist/ReactToastify.css';
 import CenteredCard from "../../component/CenterCard";
+import {useAppContext} from '../../context/AppContext'
+import { ThreeDots  } from 'react-loading-icons'
+
 import { useState } from "react";
 import FormControlCom from "../../component/FormControlCom";
 import { Link } from "react-router-dom";
 
-const Register = () => {
+import { useNavigate } from 'react-router';
+
+const Login = () => {
+  const navigate = useNavigate();
+  const {login} = useAppContext()
+  const [loadBtn ,setLoadBtnm ] = useState(false)
+
   const [formData, setFormData] = useState({
     email: "",
     linkedProfile: "",
@@ -56,7 +67,7 @@ const Register = () => {
     }
 
     setFormErrors(newErrors);
-    return valid;
+    return true;
   };
 
   const handleChange = (e: unknown) => {
@@ -64,16 +75,37 @@ const Register = () => {
     setFormData((prevData) => ({ ...prevData, [name]: value }));
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
+  const handleSubmit =async (e) => {
+    try{
+      e.preventDefault();
+      setLoadBtnm(true)
+    
+      if (validateForm()) {
+        // Form submission logic goes here
+        console.log("Form submitted:", formData); 
+      await  login(formData.email ,formData.pass )
+      navigate('/');
 
-    if (validateForm()) {
-      // Form submission logic goes here
-      console.log("Form submitted:", formData);
-    } else {
-      console.log("Form has errors. Please fix them.");
+      } else {
+        console.log("Form has errors. Please fix them.");
+      }
+    }catch(err){
+      console.log(err)
+    }finally{
+      setLoadBtnm(false)
+      console.log("naigate failed")
+      toast.warn('🦄 User Not Found', {
+        position: "top-center",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "colored",
+        });
     }
-  };
+  }
   return (
     <div
       style={{
@@ -95,7 +127,7 @@ const Register = () => {
           }}
         >
           <Typography variant="h3" color="initial">
-            Register
+            Login
           </Typography>
           <form onSubmit={handleSubmit}>
             <FormControl fullWidth>
@@ -124,8 +156,9 @@ const Register = () => {
               variant="contained"
               color="secondary"
               fullWidth
+              endIcon={loadBtn && <ThreeDots strokeOpacity={.125} />}
             >
-              Register
+              Login
             </Button>
           </form>
           <Stack
@@ -135,12 +168,24 @@ const Register = () => {
             divider={<Divider orientation="vertical" flexItem />}
           >
             <p>do you have no account</p>
-            <Link to="/register">Reigster</Link>
+            <Link to="/register">Register</Link>
           </Stack>
         </Container>
       </CenteredCard>
+      <ToastContainer
+position="top-center"
+autoClose={5000}
+hideProgressBar={false}
+newestOnTop={false}
+closeOnClick
+rtl={false}
+pauseOnFocusLoss
+draggable
+pauseOnHover
+theme="colored"
+/>
     </div>
   );
 };
 
-export default Register;
+export default Login;
