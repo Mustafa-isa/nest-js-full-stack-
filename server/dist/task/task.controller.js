@@ -20,7 +20,7 @@ let TaskController = class TaskController {
         this.taskService = taskService;
     }
     async createTask(req, body) {
-        return this.taskService.createTask(body.id, body.title, body.description, body.catogrey);
+        return this.taskService.createTask(body.id, body.title, body.description, body.category);
     }
     async getAllTasks(userId) {
         return this.taskService.getAllTasks(+userId);
@@ -28,12 +28,14 @@ let TaskController = class TaskController {
     async getTaskById(id) {
         return this.taskService.getTaskById(+id);
     }
-    async updateTask(id, body) {
-        return this.taskService.updateTask(+id, body.title, body.description);
+    toggleComplete(taskId) {
+        return this.taskService.toggleComplete(taskId);
     }
-    async deleteTask(id) {
-        await this.taskService.deleteTask(+id);
-        return { message: 'Task deleted successfully' };
+    updateTask(taskId, userId, updateTaskDto) {
+        return this.taskService.updateTask(taskId, userId, updateTaskDto);
+    }
+    deleteTask(taskId, userId) {
+        return this.taskService.deleteTask(taskId, userId);
     }
 };
 exports.TaskController = TaskController;
@@ -60,19 +62,28 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], TaskController.prototype, "getTaskById", null);
 __decorate([
-    (0, common_1.Patch)(':id'),
-    __param(0, (0, common_1.Param)('id')),
-    __param(1, (0, common_1.Body)()),
+    (0, common_1.Put)(':taskId/toggle-complete'),
+    __param(0, (0, common_1.Param)('taskId')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, Object]),
-    __metadata("design:returntype", Promise)
+    __metadata("design:paramtypes", [Number]),
+    __metadata("design:returntype", void 0)
+], TaskController.prototype, "toggleComplete", null);
+__decorate([
+    (0, common_1.Put)(':taskId/:userId'),
+    __param(0, (0, common_1.Param)('taskId')),
+    __param(1, (0, common_1.Param)('userId')),
+    __param(2, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number, Number, Object]),
+    __metadata("design:returntype", void 0)
 ], TaskController.prototype, "updateTask", null);
 __decorate([
-    (0, common_1.Delete)(':id'),
-    __param(0, (0, common_1.Param)('id')),
+    (0, common_1.Delete)(':taskId/:userId'),
+    __param(0, (0, common_1.Param)('taskId')),
+    __param(1, (0, common_1.Param)('userId')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
-    __metadata("design:returntype", Promise)
+    __metadata("design:paramtypes", [Number, Number]),
+    __metadata("design:returntype", void 0)
 ], TaskController.prototype, "deleteTask", null);
 exports.TaskController = TaskController = __decorate([
     (0, common_1.Controller)('tasks'),

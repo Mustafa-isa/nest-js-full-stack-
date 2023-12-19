@@ -6,13 +6,11 @@ export declare class TaskController {
         title: string;
         description: string;
         id: number;
-        catogrey: 'string';
+        category: 'string';
     }): Promise<any>;
     getAllTasks(userId: string): Promise<any>;
     getTaskById(id: string): Promise<any>;
-    updateTask(id: string, body: {
-        title: string;
-        description?: string;
-    }): Promise<any>;
-    deleteTask(id: string): Promise<any>;
+    toggleComplete(taskId: number): Promise<boolean>;
+    updateTask(taskId: number, userId: number, updateTaskDto: any): Promise<import("./entity/task.entity").Task>;
+    deleteTask(taskId: number, userId: number): Promise<boolean>;
 }

@@ -9,7 +9,7 @@ interface User {
   id: string;
   username: string;
 }
-
+let data;
 interface Task {
   title: ReactNode;
   id: string;
@@ -33,7 +33,7 @@ interface AppContextProps {
 }
 
 const AppContext = createContext<AppContextProps | undefined>(undefined);
-let data ;
+
 export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
@@ -106,38 +106,30 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
     }
   };
 
-  const deleteTask = async (taskId: string) => {
+  const deleteTask = async (taskId:number,userId:number) => {
     try {
-      await axiosInstance.delete(`/tasks/${taskId}`, {
-        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-      });
+      const res =await axios.delete(`http://localhost:3000/tasks/${taskId}/${userId}`,)
+    
 
-      setTasks((prevTasks) => prevTasks.filter((task) => task.id !== taskId));
+      getTasks()
+      console.log(res.data)
     } catch (error) {
       console.error("Error during delete task:", error);
       // Handle delete task error
     }
   };
 
-  const updateTask = async (taskId: string, updatedTask: Task) => {
+  const updateTask = async (taskId:number ,userId: number, updateTaskData) => {
     try {
-      const response = await axiosInstance.put(
-        `/tasks/${taskId}`,
-        updatedTask,
-        {
-          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-        }
-      );
-
-      const updatedTaskData: Task = response.data;
-      setTasks((prevTasks) =>
-        prevTasks.map((task) => (task.id === taskId ? updatedTaskData : task))
-      );
+      await axios.put(`http://localhost:3000/tasks/${taskId}/${userId}`, updateTaskData);
+      getTasks();
     } catch (error) {
       console.error("Error during update task:", error);
       // Handle update task error
     }
   };
+
+    
 
   const getTasks = async () => {
     try {
@@ -151,7 +143,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
       );
 
       const tasksData = response.data;
-      data =tasksData
+      data = tasksData;
       setTasks(tasksData);
     } catch (error) {
       console.error("Error during get tasks:", error);
@@ -159,41 +151,34 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
     }
   };
   const filterTasks = (condition) => {
-    switch (condition) {
-      case "Sport":
-        setTasks((prevTasks) =>
-          prevTasks.filter((el) => el.description === "Sport")
-        );
-        break;
-
-        case "Eductional":
-          setTasks((prevTasks) =>
-            prevTasks.filter((el) => el.description === "Eductional")
-          );
-          break;
-
-          case "Eductional":
-            setTasks((prevTasks) =>
-              prevTasks.filter((el) => el.description === "Eductional")
-            );
-            break;
-
-            case "Eductional":
-              setTasks((prevTasks) =>
-                prevTasks.filter((el) => el.description === "Eductional")
-              );
-              break;
-      // Add more cases for different conditions as needed
-  
-      default:
-        // Handle the default case by setting tasks to the original array
-        setTasks(data);
-        console.log("not sport you clicked")
-        console.log(condition)
-        break;
+    if (condition == "Sport") {
+      setTasks(data.filter((el) => el.category == "Sport"));
+    } else if (condition == "Eductional") {
+      setTasks(data.filter((el) => el.category == "Eductional"));
+    } else if (condition == "Completed") {
+      setTasks(data.filter((el) => el.complete == true));
+    } else if (condition == "onProgress") {
+      setTasks(data.filter((el) => el.complete == false));
+    } else if (condition == "Work") {
+      setTasks(data.filter((el) => el.category == "Work"));
+    } else {
+      setTasks(data);
     }
   };
+  const handleToggleComplete = async (taskId: number) => {
+    // Send a request to your backend API to toggle the completion status
+    try {
+      const res = await axios.put(
+        `http://localhost:3000/tasks/${taskId}/toggle-complete`
+      );
+      // Update the local state with the updated task list
 
+      console.log(res.data);
+    } catch (e) {
+      console.log(e);
+    }
+    getTasks()
+  };
   return (
     <AppContext.Provider
       value={{
@@ -207,6 +192,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
         updateTask,
         getTasks,
         filterTasks,
+        handleToggleComplete,
       }}
     >
       {children}

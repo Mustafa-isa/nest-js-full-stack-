@@ -21,12 +21,12 @@ let TaskService = class TaskService {
     constructor(taskRepository) {
         this.taskRepository = taskRepository;
     }
-    async createTask(userId, title, description, catogrey) {
+    async createTask(userId, title, description, category) {
         const task = this.taskRepository.create({
             title,
             description,
             userId,
-            catogrey,
+            category,
         });
         return this.taskRepository.save(task);
     }
@@ -40,15 +40,39 @@ let TaskService = class TaskService {
         }
         return task;
     }
-    async updateTask(id, title, description) {
-        const task = await this.getTaskById(id);
-        task.title = title;
-        task.description = description;
-        return this.taskRepository.save(task);
+    async toggleComplete(taskId) {
+        const task = await this.taskRepository.findOne({
+            where: { id: taskId },
+        });
+        if (task) {
+            task.complete = !task.complete;
+            await this.taskRepository.save(task);
+            return true;
+        }
+        else {
+            throw new common_1.NotFoundException(`Task with ID ${taskId} not found for User with ID `);
+        }
     }
-    async deleteTask(id) {
-        const task = await this.getTaskById(id);
+    async updateTask(taskId, userId, updateTaskDto) {
+        const task = await this.taskRepository.findOne({
+            where: { id: taskId, userId },
+        });
+        if (!task) {
+            throw new common_1.NotFoundException(`Task with ID ${taskId} not found for User with ID ${userId}`);
+        }
+        Object.assign(task, updateTaskDto);
+        await this.taskRepository.save(task);
+        return task;
+    }
+    async deleteTask(taskId, userId) {
+        const task = await this.taskRepository.findOne({
+            where: { id: taskId, userId },
+        });
+        if (!task) {
+            throw new common_1.NotFoundException(`Task with ID ${taskId} not found for User with ID ${userId}`);
+        }
         await this.taskRepository.remove(task);
+        return true;
     }
 };
 exports.TaskService = TaskService;

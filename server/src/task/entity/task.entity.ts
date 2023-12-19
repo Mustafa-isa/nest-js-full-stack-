@@ -18,7 +18,7 @@ export class Task {
   title: string;
 
   @Column({ nullable: true })
-  catogrey: string;
+  category: string;
 
   @Column({ nullable: true })
   description: string;

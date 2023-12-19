@@ -1,12 +1,23 @@
 // src/tasks/task.controller.ts
 
-import { Controller, Post, Get, Param, Patch, Delete, Body, UseGuards, Request, Query } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Get,
+  Param,
+  Patch,
+  Delete,
+  Body,
+  UseGuards,
+  Request,
+  Query,
+  Put,
+} from '@nestjs/common';
 import { TaskService } from './task.service';
 
 @Controller('tasks')
 export class TaskController {
   constructor(private readonly taskService: TaskService) {}
-
 
   @Post()
   async createTask(
@@ -16,17 +27,16 @@ export class TaskController {
       title: string;
       description: string;
       id: number;
-      catogrey: 'string';
+      category: 'string';
     },
   ): Promise<any> {
     return this.taskService.createTask(
       body.id,
       body.title,
       body.description,
-      body.catogrey,
+      body.category,
     );
   }
-
 
   @Get()
   async getAllTasks(@Query('userId') userId: string): Promise<any> {
@@ -37,14 +47,22 @@ export class TaskController {
     return this.taskService.getTaskById(+id);
   }
 
-  @Patch(':id')
-  async updateTask(@Param('id') id: string, @Body() body: { title: string, description?: string }): Promise<any> {
-    return this.taskService.updateTask(+id, body.title, body.description);
+  @Put(':taskId/toggle-complete')
+  toggleComplete(@Param('taskId') taskId: number) {
+    return this.taskService.toggleComplete(taskId);
   }
 
-  @Delete(':id')
-  async deleteTask(@Param('id') id: string): Promise<any> {
-    await this.taskService.deleteTask(+id);
-    return { message: 'Task deleted successfully' };
+  @Put(':taskId/:userId')
+  updateTask(
+    @Param('taskId') taskId: number,
+    @Param('userId') userId: number,
+    @Body() updateTaskDto,
+  ) {
+    return this.taskService.updateTask(taskId, userId, updateTaskDto);
+  }
+
+  @Delete(':taskId/:userId')
+  deleteTask(@Param('taskId') taskId: number, @Param('userId') userId: number) {
+    return this.taskService.deleteTask(taskId, userId);
   }
 }

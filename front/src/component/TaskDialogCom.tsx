@@ -58,7 +58,7 @@ function TaskDialogCom() {
     });
     addTask({
       title: taskDetails.title,
-      catogrey: taskDetails.category,
+      category: taskDetails.category,
       description: taskDetails.description,
       id: JSON.parse(localStorage.getItem("userData")).id,
       
