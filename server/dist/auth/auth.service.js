@@ -38,7 +38,7 @@ let AuthService = class AuthService {
         if (linkedinProfile) {
             try {
                 linkedinProfileImageUrl =
-                    await this.scrapingService.scrapeUserProfileImage(linkedinProfile);
+                    await this.scrapingService.scrapeProfileImage(linkedinProfile);
             }
             catch (error) {
                 console.error('Error scraping LinkedIn profile image:', error.message);

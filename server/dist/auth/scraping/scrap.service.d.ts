@@ -1,3 +1,3 @@
 export declare class ScrapingService {
-    scrapeUserProfileImage(linkedinProfileUrl: string): Promise<string | null>;
+    scrapeProfileImage(url: string): Promise<string>;
 }

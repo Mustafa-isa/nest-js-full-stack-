@@ -6,22 +6,25 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.ScrapingService = void 0;
+exports.SCR = void 0;
 const common_1 = require("@nestjs/common");
 const selenium_webdriver_1 = require("selenium-webdriver");
-const chrome_1 = require("selenium-webdriver/chrome");
-let ScrapingService = class ScrapingService {
+const chrome = require("selenium-webdriver/chrome");
+let SCR = class SCR {
     async scrapeProfileImage(url) {
-        let driver = await new selenium_webdriver_1.Builder().forBrowser('chrome').setChromeOptions(new chrome_1.Options().headless()).build();
+        const driver = await new selenium_webdriver_1.Builder()
+            .forBrowser('chrome')
+            .setChromeOptions(new chrome.Options().headless())
+            .build();
         await driver.get(url);
-        let imageElement = await driver.wait(selenium_webdriver_1.until.elementLocated(selenium_webdriver_1.By.className('profile-picture-container')), 10000);
-        let image = await imageElement.getAttribute('src');
+        const imageElement = await driver.wait(selenium_webdriver_1.until.elementLocated(selenium_webdriver_1.By.className('profile-picture-container')), 10000);
+        const image = await imageElement.getAttribute('src');
         await driver.quit();
         return image;
     }
 };
-exports.ScrapingService = ScrapingService;
-exports.ScrapingService = ScrapingService = __decorate([
+exports.SCR = SCR;
+exports.SCR = SCR = __decorate([
     (0, common_1.Injectable)()
-], ScrapingService);
+], SCR);
 //# sourceMappingURL=scrap.service.js.map

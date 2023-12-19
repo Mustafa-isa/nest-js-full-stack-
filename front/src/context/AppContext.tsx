@@ -81,6 +81,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
         "userData",
         JSON.stringify(response.data.userRegistreration)
       );
+    console.log(response.data)
     } catch (error) {
       throw new Error("user cant register");
       console.error("Error during registration:", error);
