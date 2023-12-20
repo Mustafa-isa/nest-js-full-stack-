@@ -1,27 +1,30 @@
 // App.js
 import {
   Button,
-  
   Container,
   Divider,
   FormControl,
-  
   Typography,
 } from "@mui/material";
-import { ThreeDots  } from 'react-loading-icons'
-import Stack from '@mui/material/Stack';
+import Stack from "@mui/material/Stack";
+import { ToastContainer, toast,  } from 'react-toastify';
 
+  import 'react-toastify/dist/ReactToastify.css';
 import CenteredCard from "../../component/CenterCard";
+import {useAppContext} from '../../context/AppContext'
+import { ThreeDots  } from 'react-loading-icons'
+
 import { useState } from "react";
 import FormControlCom from "../../component/FormControlCom";
 import { Link } from "react-router-dom";
-import {useAppContext} from '../../context/AppContext'
+
 import { useNavigate } from 'react-router';
 
-
 const Register = () => {
+  const navigate = useNavigate();
+  const {register} = useAppContext()
   const [loadBtn ,setLoadBtnm ] = useState(false)
-  const {register}  = useAppContext()
+
   const [formData, setFormData] = useState({
     email: "",
     linkedProfile: "",
@@ -33,20 +36,20 @@ const Register = () => {
     linkedProfile: "",
     pass: "",
   });
-  const navigate = useNavigate();
+
   const validateForm = () => {
     let valid = true;
     const newErrors = { ...formErrors };
 
-    // Validate First Name
-    if (formData.email.trim() === "") {
+
+    if (formData.pass.trim() === "") {
       newErrors.pass = "pass is required";
       valid = false;
     } else {
       newErrors.pass = "";
     }
 
-    // Validate Last Name
+  
     if (formData.linkedProfile.trim() === "") {
       newErrors.linkedProfile = "url is required";
       valid = false;
@@ -64,7 +67,7 @@ const Register = () => {
     }
 
     setFormErrors(newErrors);
-    return valid;
+    return true;
   };
 
   const handleChange = (e: unknown) => {
@@ -73,25 +76,37 @@ const Register = () => {
   };
 
   const handleSubmit =async (e) => {
-try{
-  e.preventDefault();
-  setLoadBtnm(true)
+    try{
+      e.preventDefault();
+      setLoadBtnm(true)
+    
+      if (validateForm()) {
+        // Form submission logic goes here
+        console.log("Form submitted:", formData); 
+      await  register(formData.email ,formData.pass ,formData.linkedProfile)
+      navigate('/');
+      console.log("naigate failed")
+      toast.warn('🦄 User Not Found', {
+        position: "top-center",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "colored",
+        });
 
-  if (validateForm()) {
-    // Form submission logic goes here
-    console.log("Form submitted:", formData); 
-  await  register(formData.email ,formData.pass ,formData.linkedProfile)
-  } else {
-    console.log("Form has errors. Please fix them.");
+      } else {
+        console.log("Form has errors. Please fix them.");
+      }
+    }catch(err){
+      console.log(err)
+    }finally{
+      setLoadBtnm(false)
+    
+    }
   }
-}catch(err){
-  console.log(errr)
-}finally{
-  setLoadBtnm(false)
-  navigate('/');
-  console.log("naigate failed")
-}
-  };
   return (
     <div
       style={{
@@ -118,23 +133,24 @@ try{
           <form onSubmit={handleSubmit}>
             <FormControl fullWidth>
               <FormControlCom
-              type="email"
-              name="email"
-              value={formData.email}
-              onChange={handleChange}
-              error={!!formErrors.email}
-              helperText={formErrors.email}
-              label="email"
-            />
+                type="email"
+                name="email"
+                value={formData.email}
+                onChange={handleChange}
+                error={!!formErrors.email}
+                helperText={formErrors.email}
+                label="email"
+              />
               <FormControlCom
-              type="password"
-              name="pass"
-              value={formData.pass}
-              onChange={handleChange}
-              error={!!formErrors.pass}
-              helperText={formErrors.pass}
-              label="password"
-            />
+                type="password"
+                name="pass"
+                value={formData.pass}
+                onChange={handleChange}
+                error={!!formErrors.pass}
+                helperText={formErrors.pass}
+                label="password"
+              />
+            </FormControl>
             <FormControlCom
               type="url"
               name="linkedProfile"
@@ -145,29 +161,39 @@ try{
               label="linkedProfile"
             />
 
-            
-            </FormControl>
-
             <Button
               type="submit"
               variant="contained"
               color="secondary"
               fullWidth
-             endIcon={loadBtn && <ThreeDots strokeOpacity={.125} />}
+              endIcon={loadBtn && <ThreeDots strokeOpacity={.125} />}
             >
-              Register
+              Login
             </Button>
           </form>
-          <Stack direction="row" 
-          sx={{mt:"10px"}}
+          <Stack
+            direction="row"
+            sx={{ mt: "10px" }}
             spacing={{ xs: 1, sm: 2, md: 4 }}
             divider={<Divider orientation="vertical" flexItem />}
-          > 
-            <p>do you have account</p>
-            <Link to='/login'>Login</Link>
+          >
+            <p>do you have no account</p>
+            <Link to="/login">Login</Link>
           </Stack>
         </Container>
       </CenteredCard>
+      <ToastContainer
+position="top-center"
+autoClose={5000}
+hideProgressBar={false}
+newestOnTop={false}
+closeOnClick
+rtl={false}
+pauseOnFocusLoss
+draggable
+pauseOnHover
+theme="colored"
+/>
     </div>
   );
 };
